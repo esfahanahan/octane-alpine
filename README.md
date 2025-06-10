@@ -80,7 +80,7 @@ RUN docker-php-ext-install xdebug
 ```dockerfile
 FROM ghcr.io/esfahanahan/octane-alpine:8.3-swoole-mysql
 
-RUN echo '0 * * * * /usr/local/bin/php /var/www/artisan schedule:run >> /dev/null 2>&1' >> /etc/crontab
+RUN echo '* * * * * /usr/local/bin/php /var/www/artisan schedule:run >> /dev/null 2>&1' >> /etc/crontab
 ```
  
 ## Adding custom Supervisor config
