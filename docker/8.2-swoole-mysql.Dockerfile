@@ -13,4 +13,4 @@ RUN --mount=type=bind,source=fs,target=/mnt apk add --no-cache --virtual .build-
         swoole && \
     docker-php-ext-enable swoole && \
     apk del --no-network .build-deps && \
-    cp -v /mnt/etc/supervisor/conf.d/20-octane-swoole.conf /etc/supervisor/conf.d/20-swool.conf
+    cp -v /mnt/etc/supervisor/conf.d/20-octane-swoole.conf /etc/supervisor/conf.d/20-swoole.conf
