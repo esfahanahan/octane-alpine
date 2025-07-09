@@ -20,4 +20,17 @@ RUN --mount=type=bind,source=fs,target=/mnt/fs apk add --no-cache --virtual .bui
     apk del --no-network .build-deps && \
     cp -v -R /mnt/fs/* /
 
+RUN apk add --no-cache \
+        nodejs \
+        npm \
+        git \
+        zsh && \
+    git config --global --add safe.directory /var/www
+
 USER www-data
+
+RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh -o /tmp/omz-install.sh && \
+    chmod +x /tmp/omz-install.sh && \
+    /tmp/omz-install.sh --unattended && \
+    sed -i 's/^plugins=(git)$/plugins=(git laravel)/' /home/www-data/.zshrc && \
+    rm -f /tmp/omz-install.sh

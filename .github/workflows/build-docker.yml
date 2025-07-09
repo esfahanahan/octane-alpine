@@ -18,7 +18,7 @@ jobs:
       fail-fast: true
       matrix:
         version: ["8.2", "8.3"]
-        variant: ["swoole-mysql", "swoole-pgsql"]
+        variant: ["swoole-mysql", "swoole-mysql-dev", "swoole-pgsql", "swoole-pgsql-dev"]
     name: ${{ matrix.version }} ${{ matrix.variant }}
     permissions:
       contents: read
