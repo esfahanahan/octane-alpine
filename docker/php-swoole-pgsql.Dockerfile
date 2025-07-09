@@ -1,9 +1,14 @@
-FROM ghcr.io/esfahanahan/php-alpine:8.3-pgsql
+# values: 8.2, 8.3
+ARG PHP_VERSION=8.3
 
-LABEL org.opencontainers.image.title="PHP 8.3 with Swoole, PostgreSQL, and Supervisor"
-LABEL org.opencontainers.image.description="PHP 8.3 with Swoole, PostgreSQL, and Supervisor including extensions: (bcmath, bz2, exif, gd, gmp, intl, mysqli, opcache, pcntl, pdo, pdo_mysql, sockets, xml, zip, inotify, exif, memcached, redis) based on ghcr.io/esfahanahan/php-alpine:8.3-pgsql"
+FROM ghcr.io/esfahanahan/php-alpine:${PHP_VERSION}-pgsql
+
+LABEL org.opencontainers.image.title="PHP ${PHP_VERSION} with Swoole, PostgreSQL, and Supervisor"
+LABEL org.opencontainers.image.description="PHP ${PHP_VERSION} with Swoole, PostgreSQL, and Supervisor including extensions: (bcmath, bz2, exif, gd, gmp, intl, mysqli, opcache, pcntl, pdo, pdo_mysql, sockets, xml, zip, inotify, exif, memcached, redis) based on ghcr.io/esfahanahan/php-alpine:${PHP_VERSION}-pgsql"
 
 ENV OCTANE_SERVER=swoole
+
+USER root
 
 RUN --mount=type=bind,source=fs,target=/mnt apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
         curl-dev \
@@ -14,3 +19,5 @@ RUN --mount=type=bind,source=fs,target=/mnt apk add --no-cache --virtual .build-
     docker-php-ext-enable swoole && \
     apk del --no-network .build-deps && \
     cp -v /mnt/etc/supervisor/conf.d/20-octane-swoole.conf /etc/supervisor/conf.d/20-swoole.conf
+
+USER www-data
