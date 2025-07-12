@@ -10,7 +10,7 @@ ENV OCTANE_SERVER=swoole
 
 USER root
 
-RUN --mount=type=bind,source=fs,target=/mnt/fs apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
+RUN --mount=type=bind,source=fs/common,target=/mnt/fs apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
         curl-dev \
         brotli-dev && \
     pecl install --configureoptions \
