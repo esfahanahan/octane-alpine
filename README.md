@@ -26,11 +26,21 @@ This Docker image is specifically designed for running Laravel Octane with Swool
   docker pull ghcr.io/esfahanahan/octane-alpine:8.3-swoole-mysql
   docker pull ghcr.io/esfahanahan/octane-alpine:8.3-swoole-pgsql
   ```
+- PHP 8.4 with Swoole (**MySQL** / **PostgreSQL**)
+  ```bash
+  docker pull ghcr.io/esfahanahan/octane-alpine:8.4-swoole-mysql
+  docker pull ghcr.io/esfahanahan/octane-alpine:8.4-swoole-pgsql
+  ```
+- PHP 8.5 with Swoole (**MySQL** / **PostgreSQL**)
+  ```bash
+  docker pull ghcr.io/esfahanahan/octane-alpine:8.5-swoole-mysql
+  docker pull ghcr.io/esfahanahan/octane-alpine:8.5-swoole-pgsql
+  ```
 
 ## Usage
 To run from current dir:
 ```bash
-docker run --rm -v $(pwd):/var/www -p 8000:8000 ghcr.io/esfahanahan/octane-alpine:8.3-swoole-mysql
+docker run --rm -v $(pwd):/var/www -p 8000:8000 ghcr.io/esfahanahan/octane-alpine:8.5-swoole-mysql
 ```
 
 Note: The container exposes port 8000 by default, which is the standard port for Laravel Octane with Swoole.
@@ -53,16 +63,15 @@ Note: The `--rm` flag automatically removes the container when it exits, prevent
 
 ## PHP Extension
 - bcmath
-- bz2
 - exif
 - gd
-- gmp
 - intl
-- mysqli/pgsql (depending on variant)
 - opcache
 - pcntl
 - pdo
 - pdo_mysql/pdo_pgsql (depending on variant)
+- redis
+- soap
 - sockets
 - swoole
 - xml
@@ -72,13 +81,13 @@ Note: The `--rm` flag automatically removes the container when it exits, prevent
 ## Adding other PHP Extension
 You can add additional PHP Extensions by running `docker-php-ext-install` command. Don't forget to install necessary dependencies for required extension.
 ```dockerfile
-FROM ghcr.io/esfahanahan/octane-alpine:8.3-swoole-mysql
+FROM ghcr.io/esfahanahan/octane-alpine:8.5-swoole-mysql
 RUN docker-php-ext-install xdebug
 ```
 
 ## Adding a cronjob
 ```dockerfile
-FROM ghcr.io/esfahanahan/octane-alpine:8.3-swoole-mysql
+FROM ghcr.io/esfahanahan/octane-alpine:8.5-swoole-mysql
 
 RUN echo '* * * * * /usr/local/bin/php /var/www/artisan schedule:run >> /dev/null 2>&1' >> /etc/crontab
 ```
@@ -98,7 +107,7 @@ redirect_stderr=true
 
 On your Docker image:
 ```dockerfile
-FROM ghcr.io/esfahanahan/octane-alpine:8.3-swoole-mysql
+FROM ghcr.io/esfahanahan/octane-alpine:8.5-swoole-mysql
 ADD my-service.conf /etc/supervisor.d/
 ```
 For more details please refrer to [QPod/supervisord](https://github.com/QPod/supervisord/blob/main/doc/doc-config.md) documentions.
