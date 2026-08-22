@@ -13,7 +13,10 @@ USER root
 RUN --mount=type=bind,source=fs/common,target=/mnt/fs apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
         brotli-dev \
         curl-dev \
-        linux-headers && \
+        linux-headers \
+        openssl-dev \
+        sqlite-dev \
+        zstd-dev && \
     pecl install --configureoptions \
         "enable-brotli='yes' enable-mysqlnd='yes' enable-openssl='yes' enable-sockets='yes' enable-swoole-curl='yes' enable-swoole-sqlite='yes' enable-zstd='yes'" \
         swoole && \
