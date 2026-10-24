@@ -25,41 +25,34 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 jobs:
+  matrix:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    outputs:
+      include: ${{ steps.expand.outputs.include }}
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+
+      - name: Expand image pins
+        id: expand
+        run: |
+          INCLUDE="$(python3 .github/scripts/image-matrix.py)"
+          {
+            echo "include<<EOF"
+            echo "$INCLUDE"
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
+
   build:
+    needs: matrix
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       fail-fast: true
       matrix:
-        # One Alpine release. Every entry pushes the short tags, so a second
-        # entry would publish 8.5-swoole-mysql twice.
-        alpine: ["3.24"]
-        php:
-          - version: "8.5"
-            patch: "8.5.12"
-          - version: "8.4"
-            patch: "8.4.27"
-          - version: "8.3"
-            patch: "8.3.36"
-          - version: "8.2"
-            patch: "8.2.35"
-        variant:
-          - name: swoole-mysql
-            base: mysql
-            stack: Swoole, MySQL, and Supervisor
-            extensions: bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip
-          - name: swoole-mysql-dev
-            base: mysql
-            stack: Swoole, MySQL, Supervisor, and development tools
-            extensions: bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip
-          - name: swoole-pgsql
-            base: pgsql
-            stack: Swoole, PostgreSQL, and Supervisor
-            extensions: bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_pgsql, redis, soap, sockets, swoole, xml, zip
-          - name: swoole-pgsql-dev
-            base: pgsql
-            stack: Swoole, PostgreSQL, Supervisor, and development tools
-            extensions: bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_pgsql, redis, soap, sockets, swoole, xml, zip
+        include: ${{ fromJson(needs.matrix.outputs.include) }}
     name: ${{ matrix.php.patch }} alpine${{ matrix.alpine }} ${{ matrix.variant.name }}
     permissions:
       contents: read

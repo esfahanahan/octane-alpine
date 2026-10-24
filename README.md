@@ -23,7 +23,7 @@ One build is pushed to four tags. `8.5-swoole-mysql` and `8.5.12-swoole-mysql` a
 | Tag | Example | When it moves |
 | --- | --- | --- |
 | `<minor>-<variant>` | `8.5-swoole-mysql` | Next PHP patch, or the next Alpine version in the build matrix |
-| `<patch>-<variant>` | `8.5.12-swoole-mysql` | Rebuilds of this PHP patch. Stops moving once the workflow pin leaves 8.5.12 |
+| `<patch>-<variant>` | `8.5.12-swoole-mysql` | Rebuilds of this PHP patch. Stops moving once the pin in `docker/pins` leaves 8.5.12 |
 | `<minor>-<variant>-alpine<version>` | `8.5-swoole-mysql-alpine3.24` | Next PHP patch, while this Alpine release is still the one being built |
 | `<patch>-<variant>-alpine<version>` | `8.5.12-swoole-mysql-alpine3.24` | Same rebuilds. The name stays on Alpine 3.24 after a later Alpine bump |
 
@@ -34,6 +34,8 @@ docker pull ghcr.io/esfahanahan/octane-alpine:8.5.12-swoole-mysql-alpine3.24
 ```
 
 PHP lines currently built, including the fixes for CVE-2026-109618 and CVE-2026-109619: `8.2.35`, `8.3.36`, `8.4.27`, `8.5.12` on Alpine 3.24. There is no `latest` tag. Pin a digest when a deploy must not change on rebuild.
+
+Those releases are recorded as image tags in `docker/pins`. Dependabot checks them daily and opens a pull request when a newer patch of the same PHP line and Alpine release is published. A new minor line, such as 8.6, needs its own pin file.
 
 The `-dev` variants add git, Node.js, npm, zsh, and start Octane with `--watch`. They use the same tag pattern, for example `8.5.12-swoole-mysql-dev`.
 
