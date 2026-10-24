@@ -1,0 +1,25 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+
+  # Each Dockerfile FROM tag is the PHP release that image builds.
+  # Patch updates stay on that line: 8.5.12 can move to 8.5.13,
+  # and 8.2.35 does not move to 8.5.
+  - package-ecosystem: docker
+    directory: /docker
+    schedule:
+      interval: daily
+    open-pull-requests-limit: 10
+    groups:
+      php-alpine:
+        patterns:
+          - "esfahanahan/php-alpine"
+    ignore:
+      - dependency-name: "esfahanahan/php-alpine"
+        update-types:
+          - version-update:semver-major
+          - version-update:semver-minor
