@@ -25,41 +25,55 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}
 jobs:
-  matrix:
-    runs-on: ubuntu-latest
-    permissions:
-      contents: read
-    outputs:
-      include: ${{ steps.expand.outputs.include }}
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v7
-
-      - name: Expand image pins
-        id: expand
-        run: |
-          INCLUDE="$(python3 .github/scripts/image-matrix.py)"
-          {
-            echo "include<<EOF"
-            echo "$INCLUDE"
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-
   build:
-    needs: matrix
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
       fail-fast: true
       matrix:
-        include: ${{ fromJson(needs.matrix.outputs.include) }}
-    name: ${{ matrix.php.patch }} alpine${{ matrix.alpine }} ${{ matrix.variant.name }}
+        line: ["8.5", "8.4", "8.3", "8.2"]
+        variant:
+          - name: swoole-mysql
+            base: mysql
+            stack: Swoole, MySQL, and Supervisor
+            extensions: bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip
+          - name: swoole-mysql-dev
+            base: mysql
+            stack: Swoole, MySQL, Supervisor, and development tools
+            extensions: bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip
+          - name: swoole-pgsql
+            base: pgsql
+            stack: Swoole, PostgreSQL, and Supervisor
+            extensions: bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_pgsql, redis, soap, sockets, swoole, xml, zip
+          - name: swoole-pgsql-dev
+            base: pgsql
+            stack: Swoole, PostgreSQL, Supervisor, and development tools
+            extensions: bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_pgsql, redis, soap, sockets, swoole, xml, zip
+    name: ${{ matrix.line }} ${{ matrix.variant.name }}
     permissions:
       contents: read
       packages: write
     steps:
       - name: Checkout repository
         uses: actions/checkout@v7
+
+      - name: Read base image
+        id: base
+        run: |
+          dockerfile="docker/${{ matrix.line }}-${{ matrix.variant.base }}.Dockerfile"
+          from=$(grep -m1 '^FROM ghcr.io/esfahanahan/php-alpine:' "$dockerfile")
+          tag=${from#*php-alpine:}
+          tag=${tag%% *}
+          patch=${tag%%-*}
+          minor=${patch%.*}
+          alpine=${tag##*alpine}
+          if [ "$minor" != "${{ matrix.line }}" ]; then
+            echo "::error::${dockerfile} is PHP ${patch}, expected ${{ matrix.line }}"
+            exit 1
+          fi
+          echo "patch=${patch}" >> "$GITHUB_OUTPUT"
+          echo "version=${minor}" >> "$GITHUB_OUTPUT"
+          echo "alpine=${alpine}" >> "$GITHUB_OUTPUT"
 
       - name: Log into registry ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
@@ -80,24 +94,24 @@ jobs:
           flavor: |
             latest=false
           tags: |
-            type=raw,value=${{ matrix.php.version }}-${{ matrix.variant.name }}
-            type=raw,value=${{ matrix.php.patch }}-${{ matrix.variant.name }}
-            type=raw,value=${{ matrix.php.version }}-${{ matrix.variant.name }}-alpine${{ matrix.alpine }}
-            type=raw,value=${{ matrix.php.patch }}-${{ matrix.variant.name }}-alpine${{ matrix.alpine }}
+            type=raw,value=${{ steps.base.outputs.version }}-${{ matrix.variant.name }}
+            type=raw,value=${{ steps.base.outputs.patch }}-${{ matrix.variant.name }}
+            type=raw,value=${{ steps.base.outputs.version }}-${{ matrix.variant.name }}-alpine${{ steps.base.outputs.alpine }}
+            type=raw,value=${{ steps.base.outputs.patch }}-${{ matrix.variant.name }}-alpine${{ steps.base.outputs.alpine }}
           labels: |
-            org.opencontainers.image.title=PHP ${{ matrix.php.patch }} with ${{ matrix.variant.stack }}
-            org.opencontainers.image.description=PHP ${{ matrix.php.patch }} with ${{ matrix.variant.stack }} including extensions: (${{ matrix.variant.extensions }}) based on ghcr.io/esfahanahan/php-alpine:${{ matrix.php.patch }}-${{ matrix.variant.base }}-alpine${{ matrix.alpine }}
+            org.opencontainers.image.title=PHP ${{ steps.base.outputs.patch }} with ${{ matrix.variant.stack }}
+            org.opencontainers.image.description=PHP ${{ steps.base.outputs.patch }} with ${{ matrix.variant.stack }} including extensions: (${{ matrix.variant.extensions }}) based on ghcr.io/esfahanahan/php-alpine:${{ steps.base.outputs.patch }}-${{ matrix.variant.base }}-alpine${{ steps.base.outputs.alpine }}
             org.opencontainers.image.vendor=Esfahan Ahan Apadana
             org.opencontainers.image.authors=Hossein Hosni <hosni@esfahanahan.com>
-            org.opencontainers.image.version=${{ matrix.php.patch }}
-            org.opencontainers.image.base.name=ghcr.io/esfahanahan/php-alpine:${{ matrix.php.patch }}-${{ matrix.variant.base }}-alpine${{ matrix.alpine }}
+            org.opencontainers.image.version=${{ steps.base.outputs.patch }}
+            org.opencontainers.image.base.name=ghcr.io/esfahanahan/php-alpine:${{ steps.base.outputs.patch }}-${{ matrix.variant.base }}-alpine${{ steps.base.outputs.alpine }}
           annotations: |
-            org.opencontainers.image.title=PHP ${{ matrix.php.patch }} with ${{ matrix.variant.stack }}
-            org.opencontainers.image.description=PHP ${{ matrix.php.patch }} with ${{ matrix.variant.stack }} including extensions: (${{ matrix.variant.extensions }}) based on ghcr.io/esfahanahan/php-alpine:${{ matrix.php.patch }}-${{ matrix.variant.base }}-alpine${{ matrix.alpine }}
+            org.opencontainers.image.title=PHP ${{ steps.base.outputs.patch }} with ${{ matrix.variant.stack }}
+            org.opencontainers.image.description=PHP ${{ steps.base.outputs.patch }} with ${{ matrix.variant.stack }} including extensions: (${{ matrix.variant.extensions }}) based on ghcr.io/esfahanahan/php-alpine:${{ steps.base.outputs.patch }}-${{ matrix.variant.base }}-alpine${{ steps.base.outputs.alpine }}
             org.opencontainers.image.vendor=Esfahan Ahan Apadana
             org.opencontainers.image.authors=Hossein Hosni <hosni@esfahanahan.com>
-            org.opencontainers.image.version=${{ matrix.php.patch }}
-            org.opencontainers.image.base.name=ghcr.io/esfahanahan/php-alpine:${{ matrix.php.patch }}-${{ matrix.variant.base }}-alpine${{ matrix.alpine }}
+            org.opencontainers.image.version=${{ steps.base.outputs.patch }}
+            org.opencontainers.image.base.name=ghcr.io/esfahanahan/php-alpine:${{ steps.base.outputs.patch }}-${{ matrix.variant.base }}-alpine${{ steps.base.outputs.alpine }}
         env:
           DOCKER_METADATA_ANNOTATIONS_LEVELS: manifest,index
 
@@ -114,9 +128,8 @@ jobs:
           pull: true
           provenance: mode=max
           sbom: true
-          vars: |
-            PHP_VERSION=${{ matrix.php.patch }}
-            ALPINE_VERSION=${{ matrix.alpine }}
           set: |
-            *.cache-from=type=gha,scope=${{ github.ref_name }}-${{ matrix.php.patch }}-alpine${{ matrix.alpine }}-${{ matrix.variant.name }}
-            *.cache-to=type=gha,mode=max,scope=${{ github.ref_name }}-${{ matrix.php.patch }}-alpine${{ matrix.alpine }}-${{ matrix.variant.name }}
+            ${{ matrix.variant.name }}.dockerfile=docker/${{ matrix.line }}-${{ matrix.variant.base }}.Dockerfile
+            ${{ matrix.variant.name }}.target=${{ matrix.variant.name }}
+            *.cache-from=type=gha,scope=${{ github.ref_name }}-${{ steps.base.outputs.patch }}-alpine${{ steps.base.outputs.alpine }}-${{ matrix.variant.name }}
+            *.cache-to=type=gha,mode=max,scope=${{ github.ref_name }}-${{ steps.base.outputs.patch }}-alpine${{ steps.base.outputs.alpine }}-${{ matrix.variant.name }}
