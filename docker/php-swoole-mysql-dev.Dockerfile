@@ -1,10 +1,14 @@
-# values: 8.2, 8.3, 8.4, 8.5
+# PHP_VERSION: 8.2, 8.3, 8.4, 8.5 or a patch release
 ARG PHP_VERSION=8.5
+ARG ALPINE_VERSION=3.24
 
-FROM ghcr.io/esfahanahan/php-alpine:${PHP_VERSION}-mysql
+FROM ghcr.io/esfahanahan/php-alpine:${PHP_VERSION}-mysql-alpine${ALPINE_VERSION}
 
-LABEL org.opencontainers.image.title="PHP ${PHP_VERSION} with Swoole, MySQL, and Supervisor"
-LABEL org.opencontainers.image.description="PHP ${PHP_VERSION} with Swoole, MySQL, and Supervisor including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:${PHP_VERSION}-mysql"
+ARG PHP_VERSION
+ARG ALPINE_VERSION
+
+LABEL org.opencontainers.image.title="PHP ${PHP_VERSION} with Swoole, MySQL, Supervisor, and development tools"
+LABEL org.opencontainers.image.description="PHP ${PHP_VERSION} with Swoole, MySQL, Supervisor, and development tools including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:${PHP_VERSION}-mysql-alpine${ALPINE_VERSION}"
 
 ENV OCTANE_SERVER=swoole
 

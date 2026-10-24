@@ -16,26 +16,26 @@ High-performance PHP Docker image optimized for **Laravel Octane** with **Swoole
 This Docker image is specifically designed for running Laravel Octane with Swoole on Alpine Linux. Swoole acts as a high-performance web server and application runtime, eliminating the need for traditional web servers like Nginx or process managers like PHP-FPM. This results in significantly improved performance for Laravel applications.
 
 ## Available Variants
-- PHP 8.2 with Swoole (**MySQL** / **PostgreSQL**)
-  ```bash
-  docker pull ghcr.io/esfahanahan/octane-alpine:8.2-swoole-mysql
-  docker pull ghcr.io/esfahanahan/octane-alpine:8.2-swoole-pgsql
-  ```
-- PHP 8.3 with Swoole (**MySQL** / **PostgreSQL**)
-  ```bash
-  docker pull ghcr.io/esfahanahan/octane-alpine:8.3-swoole-mysql
-  docker pull ghcr.io/esfahanahan/octane-alpine:8.3-swoole-pgsql
-  ```
-- PHP 8.4 with Swoole (**MySQL** / **PostgreSQL**)
-  ```bash
-  docker pull ghcr.io/esfahanahan/octane-alpine:8.4-swoole-mysql
-  docker pull ghcr.io/esfahanahan/octane-alpine:8.4-swoole-pgsql
-  ```
-- PHP 8.5 with Swoole (**MySQL** / **PostgreSQL**)
-  ```bash
-  docker pull ghcr.io/esfahanahan/octane-alpine:8.5-swoole-mysql
-  docker pull ghcr.io/esfahanahan/octane-alpine:8.5-swoole-pgsql
-  ```
+`octane-alpine` is the image name. It does not include the Alpine release, so that release is a suffix on the tag, the same place the official PHP image puts it (`8.5.12-cli-alpine3.24`).
+
+One build is pushed to four tags. `8.5-swoole-mysql` and `8.5.12-swoole-mysql` are the same image: the minor tag follows the newest patch, and the patch tag is the one to pin when a deploy must include a specific PHP security release. Variants are `swoole-mysql`, `swoole-pgsql`, `swoole-mysql-dev`, and `swoole-pgsql-dev`.
+
+| Tag | Example | When it moves |
+| --- | --- | --- |
+| `<minor>-<variant>` | `8.5-swoole-mysql` | Next PHP patch, or the next Alpine version in the build matrix |
+| `<patch>-<variant>` | `8.5.12-swoole-mysql` | Rebuilds of this PHP patch. Stops moving once the workflow pin leaves 8.5.12 |
+| `<minor>-<variant>-alpine<version>` | `8.5-swoole-mysql-alpine3.24` | Next PHP patch, while this Alpine release is still the one being built |
+| `<patch>-<variant>-alpine<version>` | `8.5.12-swoole-mysql-alpine3.24` | Same rebuilds. The name stays on Alpine 3.24 after a later Alpine bump |
+
+```bash
+docker pull ghcr.io/esfahanahan/octane-alpine:8.5-swoole-mysql
+docker pull ghcr.io/esfahanahan/octane-alpine:8.5.12-swoole-mysql
+docker pull ghcr.io/esfahanahan/octane-alpine:8.5.12-swoole-mysql-alpine3.24
+```
+
+PHP lines currently built, including the fixes for CVE-2026-109618 and CVE-2026-109619: `8.2.35`, `8.3.36`, `8.4.27`, `8.5.12` on Alpine 3.24. There is no `latest` tag. Pin a digest when a deploy must not change on rebuild.
+
+The `-dev` variants add git, Node.js, npm, zsh, and start Octane with `--watch`. They use the same tag pattern, for example `8.5.12-swoole-mysql-dev`.
 
 ## Usage
 To run from current dir:
