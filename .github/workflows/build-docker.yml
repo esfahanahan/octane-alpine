@@ -1,8 +1,8 @@
 name: Build Docker Images
 on:
   schedule:
-    # php-alpine republishes the pinned security releases at 02:00 UTC.
-    # Rebuild after those tags have moved.
+    # Dockerfiles pin php-alpine by digest. This rebuilds that pin.
+    # A new php-alpine digest is used when the Dockerfile pin changes.
     - cron: "0 4 * * *"
   push:
     branches: [master]
