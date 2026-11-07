@@ -6,9 +6,9 @@ updates:
       interval: daily
     open-pull-requests-limit: 10
 
-  # Each Dockerfile FROM tag is the PHP release that image builds.
-  # Patch updates stay on that line: 8.5.12 can move to 8.5.13,
-  # and 8.2.35 does not move to 8.5.
+  # Each Dockerfile FROM is tag@digest. The tag is the PHP release.
+  # A rebuilt tag updates the digest. 8.5.12 can move to 8.5.13.
+  # 8.2.35 does not move to 8.5.
   - package-ecosystem: docker
     directory: /docker
     schedule:
