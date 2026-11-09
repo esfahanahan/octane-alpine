@@ -1,4 +1,4 @@
-FROM ghcr.io/esfahanahan/php-alpine:8.5.12-pgsql-alpine3.24@sha256:70889eac6359b4301e94ab3cdd9206bec779845d89464772821c131bbcc3d0ad AS swoole
+FROM ghcr.io/esfahanahan/php-alpine:8.5.12-pgsql-alpine3.24@sha256:ebd254c75d7d788784291dd3a8678fc8cb37092aaa01628a897b7847155decd0 AS swoole
 
 ENV OCTANE_SERVER=swoole
 
