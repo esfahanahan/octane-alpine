@@ -1,4 +1,4 @@
-FROM ghcr.io/esfahanahan/php-alpine:8.5.12-pgsql-alpine3.24@sha256:ebd254c75d7d788784291dd3a8678fc8cb37092aaa01628a897b7847155decd0 AS swoole
+FROM ghcr.io/esfahanahan/php-alpine:8.5.13-pgsql-alpine3.24 AS swoole
 
 ENV OCTANE_SERVER=swoole
 
@@ -20,8 +20,8 @@ RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
 
 FROM swoole AS swoole-pgsql-dev
 
-LABEL org.opencontainers.image.title="PHP 8.5.12 with Swoole, PostgreSQL, Supervisor, and development tools"
-LABEL org.opencontainers.image.description="PHP 8.5.12 with Swoole, PostgreSQL, Supervisor, and development tools including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_pgsql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:8.5.12-pgsql-alpine3.24"
+LABEL org.opencontainers.image.title="PHP 8.5.13 with Swoole, PostgreSQL, Supervisor, and development tools"
+LABEL org.opencontainers.image.description="PHP 8.5.13 with Swoole, PostgreSQL, Supervisor, and development tools including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_pgsql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:8.5.13-pgsql-alpine3.24"
 
 USER root
 
@@ -44,8 +44,8 @@ RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/in
 
 FROM swoole AS swoole-pgsql
 
-LABEL org.opencontainers.image.title="PHP 8.5.12 with Swoole, PostgreSQL, and Supervisor"
-LABEL org.opencontainers.image.description="PHP 8.5.12 with Swoole, PostgreSQL, and Supervisor including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_pgsql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:8.5.12-pgsql-alpine3.24"
+LABEL org.opencontainers.image.title="PHP 8.5.13 with Swoole, PostgreSQL, and Supervisor"
+LABEL org.opencontainers.image.description="PHP 8.5.13 with Swoole, PostgreSQL, and Supervisor including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_pgsql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:8.5.13-pgsql-alpine3.24"
 
 USER root
 

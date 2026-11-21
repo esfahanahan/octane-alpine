@@ -1,4 +1,4 @@
-FROM ghcr.io/esfahanahan/php-alpine:8.5.12-mysql-alpine3.24@sha256:56b365a3ea27782e58e1f4a05f36522bf9d7c35390b57258ff237db35ad25397 AS swoole
+FROM ghcr.io/esfahanahan/php-alpine:8.5.13-mysql-alpine3.24 AS swoole
 
 ENV OCTANE_SERVER=swoole
 
@@ -19,8 +19,8 @@ RUN apk add --no-cache --virtual .build-deps $PHPIZE_DEPS \
 
 FROM swoole AS swoole-mysql-dev
 
-LABEL org.opencontainers.image.title="PHP 8.5.12 with Swoole, MySQL, Supervisor, and development tools"
-LABEL org.opencontainers.image.description="PHP 8.5.12 with Swoole, MySQL, Supervisor, and development tools including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:8.5.12-mysql-alpine3.24"
+LABEL org.opencontainers.image.title="PHP 8.5.13 with Swoole, MySQL, Supervisor, and development tools"
+LABEL org.opencontainers.image.description="PHP 8.5.13 with Swoole, MySQL, Supervisor, and development tools including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:8.5.13-mysql-alpine3.24"
 
 USER root
 
@@ -43,8 +43,8 @@ RUN curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/in
 
 FROM swoole AS swoole-mysql
 
-LABEL org.opencontainers.image.title="PHP 8.5.12 with Swoole, MySQL, and Supervisor"
-LABEL org.opencontainers.image.description="PHP 8.5.12 with Swoole, MySQL, and Supervisor including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:8.5.12-mysql-alpine3.24"
+LABEL org.opencontainers.image.title="PHP 8.5.13 with Swoole, MySQL, and Supervisor"
+LABEL org.opencontainers.image.description="PHP 8.5.13 with Swoole, MySQL, and Supervisor including extensions: (bcmath, exif, gd, intl, opcache, pcntl, pdo, pdo_mysql, redis, soap, sockets, swoole, xml, zip) based on ghcr.io/esfahanahan/php-alpine:8.5.13-mysql-alpine3.24"
 
 USER root
 
